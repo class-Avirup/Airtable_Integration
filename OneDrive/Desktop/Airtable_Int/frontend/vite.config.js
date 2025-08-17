@@ -5,16 +5,17 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   plugins: [react(),tailwindcss()],
   server: {
-    port: 5173, // This sets the frontend port to 5173
+    port: 5173,
+    // This proxy is essential for your app to work
     proxy: {
-      // Proxy requests from /api to your backend
+      // Forward requests for /api/... to your backend
       '/api': {
-        target: 'http://localhost:4000',
+        target: 'https://airtable-integration.onrender.com', // Make sure this port matches your backend
         changeOrigin: true,
       },
-      // Proxy requests from /auth to your backend
+      // Forward requests for /auth/... to your backend
       '/auth': {
-        target: 'http://localhost:4000',
+        target: 'https://airtable-integration.onrender.com',
         changeOrigin: true,
       }
     }

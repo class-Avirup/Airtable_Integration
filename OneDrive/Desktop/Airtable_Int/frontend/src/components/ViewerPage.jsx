@@ -53,10 +53,10 @@ const ViewerPage = () => {
 
   // ADDED: New state to manage the view mode ('form' or 'preview')
   const [viewMode, setViewMode] = useState('form');
-
+const backend = import.meta.env.VITE_BACKEND_LINK;
   useEffect(() => {
     axios
-      .get(`/api/form-config/${userId}/${baseId}/${tableId}`)
+      .get(`${backend}/api/form-config/${userId}/${baseId}/${tableId}`)
       .then((res) => {
         setConfig(res.data);
         const initialData = res.data.fields.reduce((acc, field) => {
@@ -130,7 +130,7 @@ const ViewerPage = () => {
     }, {});
 
     axios
-      .post(`/api/submit/${userId}/${baseId}/${tableId}`, submissionData)
+      .post(`${backend}/api/submit/${userId}/${baseId}/${tableId}`, submissionData)
       .then((res) => {
         setStatus({
           message: `Submission successful! Record ID: ${res.data.record.id}`,

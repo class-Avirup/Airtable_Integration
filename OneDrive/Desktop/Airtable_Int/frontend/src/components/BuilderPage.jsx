@@ -11,7 +11,7 @@ const SUPPORTED_FIELD_TYPES = [
   "multipleSelects", // Multi select
   "attachment",
 ];
-
+const backend = import.meta.env.VITE_BACKEND_LINK;
 const BuilderPage = () => {
   const [searchParams] = useSearchParams();
   const userId = searchParams.get("user_id");
@@ -45,7 +45,7 @@ const BuilderPage = () => {
     setFieldConfig({});
     if (baseId) {
       axios
-        .get(`/api/tables/${userId}/${baseId}`)
+        .get(`${backend}/api/tables/${userId}/${baseId}`)
         .then((res) => setTables(res.data.tables))
         .catch((err) =>
           setStatus({ message: "Error fetching tables.", type: "error" })
@@ -60,7 +60,7 @@ const BuilderPage = () => {
     setFieldConfig({});
     if (tableId) {
       axios
-        .get(`/api/fields/${userId}/${selectedBase}/${tableId}`)
+        .get(`${backend}/api/fields/${userId}/${selectedBase}/${tableId}`)
         .then((res) => {
           const supportedFields = res.data.fields.filter((field) =>
             SUPPORTED_FIELD_TYPES.includes(field.type)
@@ -121,7 +121,7 @@ const BuilderPage = () => {
       });
 
     axios
-      .post("/api/form-config", {
+      .post(`${backend}/api/form-config`, {
         userId,
         baseId: selectedBase,
         tableId: selectedTable,

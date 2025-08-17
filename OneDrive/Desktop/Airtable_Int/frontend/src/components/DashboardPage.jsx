@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { Link, useSearchParams } from "react-router-dom";
-
+const backend = import.meta.env.VITE_BACKEND_LINK; 
 const DashboardPage = () => {
   const [searchParams] = useSearchParams();
   // In a real app, you'd get the userId from a login context
@@ -15,7 +15,7 @@ const DashboardPage = () => {
   useEffect(() => {
     if (userId) {
       setStatus({ message: "Loading forms...", type: "loading" });
-      axios.get(`/api/form-configs/${userId}`)
+      axios.get(`${backend}/api/form-configs/${userId}`)
         .then(res => {
           setForms(res.data);
           setStatus({ message: "", type: "" }); // Clear status on success
