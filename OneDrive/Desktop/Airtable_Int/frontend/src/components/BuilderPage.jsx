@@ -28,7 +28,7 @@ const BuilderPage = () => {
   useEffect(() => {
     if (userId) {
       axios
-        .get(`/api/bases/${userId}`)
+        .get(`${backend}/api/bases/${userId}`)
         .then((res) => setBases(res.data.bases))
         .catch((err) =>
           setStatus({ message: "Error fetching bases.", type: "error" })
