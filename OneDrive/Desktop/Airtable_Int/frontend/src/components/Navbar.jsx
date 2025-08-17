@@ -1,18 +1,17 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink } from "react-router-dom"
 
 const Navbar = () => {
   // In a real app, the userId would come from a user context
-  const userId = 'test_user_123'; 
+  const userId = "test_user_123"
 
   // Function to determine link classes based on active state
   const getLinkClassName = ({ isActive }) => {
-    const baseClasses = "font-medium transition-colors duration-200";
+    const baseClasses = "font-medium transition-colors duration-200"
     if (isActive) {
-      return `${baseClasses} text-blue-600`;
+      return `${baseClasses} text-blue-600`
     }
-    return `${baseClasses} text-gray-600 hover:text-blue-600`;
-  };
+    return `${baseClasses} text-gray-600 hover:text-blue-600`
+  }
 
   return (
     <nav className="bg-white border-b border-gray-200 px-4 sm:px-6 lg:px-8 mb-8">
@@ -35,7 +34,7 @@ const Navbar = () => {
         </div>
       </div>
     </nav>
-  );
-};
+  )
+}
 
-export default Navbar;
+export default Navbar

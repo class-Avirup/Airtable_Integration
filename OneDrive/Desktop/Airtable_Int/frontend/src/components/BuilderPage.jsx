@@ -1,8 +1,8 @@
-"use client";
+"use client"
 
-import { useState, useEffect } from "react";
-import axios from "axios";
-import { useSearchParams, Link } from "react-router-dom";
+import { useState, useEffect } from "react"
+import axios from "axios"
+import { useSearchParams, Link } from "react-router-dom"
 
 const SUPPORTED_FIELD_TYPES = [
   "singleLineText", // Short text
@@ -10,63 +10,57 @@ const SUPPORTED_FIELD_TYPES = [
   "singleSelect",
   "multipleSelects", // Multi select
   "attachment",
-];
-const backend = import.meta.env.VITE_BACKEND_LINK;
+]
+const backend = import.meta.env.VITE_BACKEND_LINK || import.meta.env.VITE_API_URL || "http://localhost:4000"
 const BuilderPage = () => {
-  const [searchParams] = useSearchParams();
-  const userId = searchParams.get("user_id");
+  const [searchParams] = useSearchParams()
+  const userId = searchParams.get("user_id")
 
-  const [bases, setBases] = useState([]);
-  const [tables, setTables] = useState([]);
-  const [fields, setFields] = useState([]);
-  const [fieldConfig, setFieldConfig] = useState({});
+  const [bases, setBases] = useState([])
+  const [tables, setTables] = useState([])
+  const [fields, setFields] = useState([])
+  const [fieldConfig, setFieldConfig] = useState({})
 
-  const [selectedBase, setSelectedBase] = useState("");
-  const [selectedTable, setSelectedTable] = useState("");
-  const [status, setStatus] = useState({ message: "", type: "" });
+  const [selectedBase, setSelectedBase] = useState("")
+  const [selectedTable, setSelectedTable] = useState("")
+  const [status, setStatus] = useState({ message: "", type: "" })
 
   useEffect(() => {
     if (userId) {
       axios
         .get(`${backend}/api/bases/${userId}`)
         .then((res) => setBases(res.data.bases))
-        .catch((err) =>
-          setStatus({ message: "Error fetching bases.", type: "error" })
-        );
+        .catch((err) => setStatus({ message: "Error fetching bases.", type: "error" }))
     }
-  }, [userId]);
+  }, [userId, backend])
 
   const handleBaseChange = (e) => {
-    const baseId = e.target.value;
-    setSelectedBase(baseId);
-    setSelectedTable("");
-    setFields([]);
-    setTables([]);
-    setFieldConfig({});
+    const baseId = e.target.value
+    setSelectedBase(baseId)
+    setSelectedTable("")
+    setFields([])
+    setTables([])
+    setFieldConfig({})
     if (baseId) {
       axios
         .get(`${backend}/api/tables/${userId}/${baseId}`)
         .then((res) => setTables(res.data.tables))
-        .catch((err) =>
-          setStatus({ message: "Error fetching tables.", type: "error" })
-        );
+        .catch((err) => setStatus({ message: "Error fetching tables.", type: "error" }))
     }
-  };
+  }
 
   const handleTableChange = (e) => {
-    const tableId = e.target.value;
-    setSelectedTable(tableId);
-    setFields([]);
-    setFieldConfig({});
+    const tableId = e.target.value
+    setSelectedTable(tableId)
+    setFields([])
+    setFieldConfig({})
     if (tableId) {
       axios
         .get(`${backend}/api/fields/${userId}/${selectedBase}/${tableId}`)
         .then((res) => {
-          const supportedFields = res.data.fields.filter((field) =>
-            SUPPORTED_FIELD_TYPES.includes(field.type)
-          );
+          const supportedFields = res.data.fields.filter((field) => SUPPORTED_FIELD_TYPES.includes(field.type))
 
-          setFields(supportedFields);
+          setFields(supportedFields)
 
           const initialConfig = supportedFields.reduce((acc, field) => {
             acc[field.id] = {
@@ -75,16 +69,14 @@ const BuilderPage = () => {
               isRequired: false, // <-- ADDED: Default is not required
               conditionalField: "",
               conditionalValue: "",
-            };
-            return acc;
-          }, {});
-          setFieldConfig(initialConfig);
+            }
+            return acc
+          }, {})
+          setFieldConfig(initialConfig)
         })
-        .catch((err) =>
-          setStatus({ message: "Error fetching fields.", type: "error" })
-        );
+        .catch((err) => setStatus({ message: "Error fetching fields.", type: "error" }))
     }
-  };
+  }
 
   const handleFieldConfigChange = (fieldId, key, value) => {
     setFieldConfig((prev) => ({
@@ -93,21 +85,21 @@ const BuilderPage = () => {
         ...prev[fieldId],
         [key]: value,
       },
-    }));
-  };
+    }))
+  }
 
   const handleSaveConfig = () => {
     const finalFields = fields
       .filter((field) => fieldConfig[field.id]?.include)
       .map((field) => {
-        const config = fieldConfig[field.id];
+        const config = fieldConfig[field.id]
         const conditional =
           config.conditionalField && config.conditionalValue
             ? {
                 showIfField: config.conditionalField,
                 equalsValue: config.conditionalValue,
               }
-            : null;
+            : null
 
         return {
           airtableFieldId: field.id,
@@ -117,8 +109,8 @@ const BuilderPage = () => {
           type: field.type,
           options: field.options,
           conditional,
-        };
-      });
+        }
+      })
 
     axios
       .post(`${backend}/api/form-config`, {
@@ -128,13 +120,9 @@ const BuilderPage = () => {
         fields: finalFields,
         tableName: tables.find((t) => t.id === selectedTable)?.name || "",
       })
-      .then((res) =>
-        setStatus({ message: "Configuration saved!", type: "success" })
-      )
-      .catch((err) =>
-        setStatus({ message: "Error saving configuration.", type: "error" })
-      );
-  };
+      .then((res) => setStatus({ message: "Configuration saved!", type: "success" }))
+      .catch((err) => setStatus({ message: "Error saving configuration.", type: "error" }))
+  }
 
   if (!userId) {
     return (
@@ -143,7 +131,7 @@ const BuilderPage = () => {
           User ID not found. Please <Link to="/">authenticate</Link> first.
         </h1>
       </div>
-    );
+    )
   }
 
   return (
@@ -168,12 +156,7 @@ const BuilderPage = () => {
       {selectedBase && (
         <div className="selector">
           <label htmlFor="table">Select a Table</label>
-          <select
-            id="table"
-            value={selectedTable}
-            onChange={handleTableChange}
-            disabled={!tables.length}
-          >
+          <select id="table" value={selectedTable} onChange={handleTableChange} disabled={!tables.length}>
             <option value="">-- Select a Table --</option>
             {tables.map((table) => (
               <option key={table.id} value={table.id}>
@@ -194,13 +177,7 @@ const BuilderPage = () => {
                 <input
                   type="checkbox"
                   checked={fieldConfig[field.id]?.include || false}
-                  onChange={(e) =>
-                    handleFieldConfigChange(
-                      field.id,
-                      "include",
-                      e.target.checked
-                    )
-                  }
+                  onChange={(e) => handleFieldConfigChange(field.id, "include", e.target.checked)}
                 />
                 <strong>{field.name}</strong> <small>({field.type})</small>
               </div>
@@ -212,9 +189,7 @@ const BuilderPage = () => {
                   <input
                     type="text"
                     value={fieldConfig[field.id]?.label || ""}
-                    onChange={(e) =>
-                      handleFieldConfigChange(field.id, "label", e.target.value)
-                    }
+                    onChange={(e) => handleFieldConfigChange(field.id, "label", e.target.value)}
                   />
                 </div>
 
@@ -224,18 +199,9 @@ const BuilderPage = () => {
                     type="checkbox"
                     id={`required-${field.id}`}
                     checked={fieldConfig[field.id]?.isRequired || false}
-                    onChange={(e) =>
-                      handleFieldConfigChange(
-                        field.id,
-                        "isRequired",
-                        e.target.checked
-                      )
-                    }
+                    onChange={(e) => handleFieldConfigChange(field.id, "isRequired", e.target.checked)}
                   />
-                  <label
-                    htmlFor={`required-${field.id}`}
-                    style={{ marginLeft: "5px", fontWeight: "normal" }}
-                  >
+                  <label htmlFor={`required-${field.id}`} style={{ marginLeft: "5px", fontWeight: "normal" }}>
                     Required?
                   </label>
                 </div>
@@ -247,13 +213,7 @@ const BuilderPage = () => {
                     Show if field
                     <select
                       value={fieldConfig[field.id]?.conditionalField || ""}
-                      onChange={(e) =>
-                        handleFieldConfigChange(
-                          field.id,
-                          "conditionalField",
-                          e.target.value
-                        )
-                      }
+                      onChange={(e) => handleFieldConfigChange(field.id, "conditionalField", e.target.value)}
                     >
                       <option value="">-- None --</option>
                       {fields
@@ -269,13 +229,7 @@ const BuilderPage = () => {
                       type="text"
                       placeholder="value"
                       value={fieldConfig[field.id]?.conditionalValue || ""}
-                      onChange={(e) =>
-                        handleFieldConfigChange(
-                          field.id,
-                          "conditionalValue",
-                          e.target.value
-                        )
-                      }
+                      onChange={(e) => handleFieldConfigChange(field.id, "conditionalValue", e.target.value)}
                     />
                   </div>
                 </div>
@@ -291,15 +245,13 @@ const BuilderPage = () => {
           {status.message}
           {status.type === "success" && (
             <p>
-              <Link to={`/form/${userId}/${selectedBase}/${selectedTable}`}>
-                View Your Form
-              </Link>
+              <Link to={`/form/${userId}/${selectedBase}/${selectedTable}`}>View Your Form</Link>
             </p>
           )}
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default BuilderPage;
+export default BuilderPage
