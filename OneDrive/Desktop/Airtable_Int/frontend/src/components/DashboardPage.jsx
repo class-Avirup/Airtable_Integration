@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import axios from "axios"
 import { Link, useSearchParams } from "react-router-dom"
-const backend =  import.meta.env.VITE_API_URL || "http://localhost:4000"
+const backend =  import.meta.env.VITE_API_URL 
 const DashboardPage = () => {
   const [searchParams] = useSearchParams()
   // In a real app, you'd get the userId from a login context

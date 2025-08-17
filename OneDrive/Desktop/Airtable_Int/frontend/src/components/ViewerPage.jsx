@@ -75,7 +75,7 @@ const ViewerPage = () => {
   // ADDED: New state to manage the view mode ('form' or 'preview')
   const [viewMode, setViewMode] = useState("form")
 
-  const backend =  import.meta.env.VITE_API_URL || "http://localhost:4000"
+  const backend =  import.meta.env.VITE_API_URL 
 
   useEffect(() => {
     axios
