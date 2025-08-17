@@ -7,15 +7,17 @@ const HomePage = () => {
   const userId = "test_user_123"; // This would be dynamic in a real app
 
   useEffect(() => {
-    // Fetch existing form configurations for the user
-    axios
-      .get(`/api/form-configs/${userId}`)
+    axios.get(`https://airtable-integration.onrender.com/api/form-configs/${userId}`)
       .then((res) => {
-        setForms(res.data);
+        // This check is the fix. It ensures that if the API
+        // returns anything other than an array, we use an empty array instead.
+        const data = Array.isArray(res.data) ? res.data : [];
+        setForms(data);
       })
       .catch((err) => {
         console.error("Could not fetch existing forms:", err);
-        // Fail silently on the homepage if forms can't be fetched
+        // Also ensure we set an empty array if the API call fails completely.
+        setForms([]);
       });
   }, [userId]);
 
@@ -36,7 +38,7 @@ const HomePage = () => {
       </p>
       <div className="flex items-center space-x-4">
         <a
-          href={`/auth/airtable?user_id=${userId}`}
+          href={`https://airtable-integration.onrender.com/auth/airtable?user_id=${userId}`}
           className="inline-block px-6 py-3 bg-gray-900 text-white font-medium rounded-lg hover:bg-gray-800 transition-colors"
         >
           Connect to Airtable
@@ -49,14 +51,13 @@ const HomePage = () => {
         </Link>
         <Link
           to={`/dashboard?user_id=${userId}`}
-          className="button"
-          style={{ backgroundColor: "#17a2b8" }}
+          className="inline-block px-6 py-3 bg-cyan-600 text-white font-medium rounded-lg hover:bg-cyan-700 transition-colors"
         >
           Go to Your Dashboard
         </Link>
       </div>
 
-      {/* This new section will only appear if the user has saved forms */}
+      {/* This section will only appear if the user has saved forms */}
       {forms.length > 0 && (
         <div className="mt-10">
           <h3 className="text-xl font-medium text-gray-800">
