@@ -8,7 +8,7 @@ const HomePage = () => {
   const [forms, setForms] = useState([])
   const userId = "test_user_123" // This would be dynamic in a real app
 
-  const backendUrl = import.meta.env.VITE_BACKEND_LINK || import.meta.env.VITE_API_URL || "http://localhost:4000"
+  const backendUrl =  import.meta.env.VITE_API_URL || "http://localhost:4000"
 
   useEffect(() => {
     axios
